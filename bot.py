@@ -26,15 +26,26 @@ async def refresh_cfg(sleep):
 def read_messages_after(earliest_date):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    query = f"""SELECT guid, account, text, date FROM message
-        JOIN handle ON message.handle_id = handle.ROWID
-        WHERE handle.id IN ({','.join(['?']*len(white_list))}) AND is_from_me = 0 AND date > {earliest_date};
-    """
-    c.execute(query, white_list)
+    # query = f"""SELECT guid, handle_id, text, date FROM message
+    #     JOIN handle ON message.handle_id = handle.ROWID
+    #     WHERE handle.id IN ({','.join(['?']*len(white_list))}) AND is_from_me = 0 AND date > {earliest_date} ;
+    # """
+    query = f"""SELECT guid, handle_id, text, date FROM message WHERE date > {earliest_date} AND text is not NULL AND service = 'iMessage'"""
+    c.execute(query)
     rows = c.fetchall()
+    ret = []
+    for row in rows:
+        guid, handle_id, text, date = row
+        print(row)
+        query = f"""SELECT id FROM handle where ROWID = {handle_id}"""
+        c.execute(query)
+        id = c.fetchone()[0]
+        if id in white_list:
+            print(f"New message from {id} : {text}")
+            ret.append((guid, id, text, date))
 
     conn.close()
-    return rows
+    return ret
 
 def update_db(func):
     def wrapper(*args, **kwargs):
@@ -48,6 +59,7 @@ def update_db(func):
         query = "INSERT INTO message (guid, account, date, message, reply) VALUES (?, ?, ?, ?, ?)"
         c.execute(query, (guid, account, date, text, message))
         conn.commit()
+
         conn.close()
 
         func(*args, **kwargs)
@@ -57,6 +69,7 @@ def update_db(func):
 def reply(**kwargs):
     _, account, _, _ = kwargs["row"]
     account = account.split(':')[-1]
+    print(account)
     message = kwargs["message"]
     os.system(f'osascript send-message.applescript {account} "{message}"')
 
