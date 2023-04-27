@@ -28,7 +28,7 @@ def read_messages_after(earliest_date):
     c = conn.cursor()
     query = f"""SELECT guid, account, text, date FROM message
         JOIN handle ON message.handle_id = handle.ROWID
-        WHERE handle.id IN ({','.join(['?']*len(white_list))}) AND is_from_me = 1 AND date > {earliest_date};
+        WHERE handle.id IN ({','.join(['?']*len(white_list))}) AND is_from_me = 0 AND date > {earliest_date};
     """
     c.execute(query, white_list)
     rows = c.fetchall()
@@ -79,7 +79,7 @@ async def run_bot():
             if text == None:
                 continue
             print(f"New message from {account}: {text}")
-            answer = await get_answer_simple(text, True, url=proxy_url)
+            answer = await get_answer_simple(text, use_proxy=False)
             reply(row=row, message=answer, db='./chat.sqlite')
         await asyncio.sleep(10)
 
