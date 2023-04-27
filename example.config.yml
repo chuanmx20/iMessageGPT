@@ -1,0 +1,5 @@
+api_key: "your openai api key"
+proxy_uri: "proxy to access openai resource if your district is banned from openai"
+db_path: "Your path to iMessage chat.db, by default it is ~/Library/Messages/chat.db"
+
+white_list: ["The phone number that you allow GPT service", "For example: +861882xxxxxxx"]
