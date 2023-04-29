@@ -35,4 +35,4 @@ The second part is supported by openai lib.
 And the last part is defined in `send-message.applescript`, which is a simple applescript function to send certain message to a certain contact.
 
 ## TBD
-I can't tell from the ~/Library/Messages/chat.db the sender of each message. Hence if you are running this bot, **DONT** send message to others with your iphone, or it will be wierd to find that you are replying your own message in the chat with other people.
+I can't tell from the ~/Library/Messages/chat.db the sender of each message. Hence if you are running this bot, **DONT** send message to others with your iphone, or it will be weird to find that you are replying your own message in the chat with other people.
